@@ -1,9 +1,22 @@
 import express from "express"
+import { CreateChatSchema } from "./types";
 
 const app = express();
 
-app.post("/chat", (req, res) => {
+app.use(express.json())
 
+app.post("/chat", (req, res) => {
+    const {success, data} = CreateChatSchema.safeParse(req.body);
+
+    if(!success) {
+        res.status(411).json({
+            message: "Incorrect inputs"
+        })
+        return;
+    }
+
+    const {message} = data;
+    // ai sdk, openrouter
 })
 
 app.listen(3000);
