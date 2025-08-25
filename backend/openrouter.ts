@@ -61,7 +61,7 @@ export const createCompletion = async (messages: Message[], model: Model) => {
             const content = parsed.choices[0]?.delta?.content;
             if (content) {// Yield or return the content chunk
               console.log(content); // this is the chunk response 
-              // here we try to display the chunks as arrived from the openrouter
+              // here we try to display the chunks as arrived from the openrouter 
             }
           } catch (e) {
             // Ignore invalid JSON chunks, they will be handled once complete
