@@ -6,3 +6,9 @@ export const CreateChatSchema = z.object({
     conversationId: z.uuid().optional(),
     message: z.string().max(MAX_INPUT_TOKENS),
 })
+
+export type Role = "agent" | "user";
+export type Message = {
+    content: string,
+    role: Role
+}[]

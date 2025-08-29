@@ -1,11 +1,9 @@
+import type { Message } from "./types";
+
 type Model = "openai/gpt-4o" | "openai/gpt-5"; // give all the models
 const OPENROUTER_KEY = process.env.OPENROUTER_KEY!; //API key from OpenRouter
 
-type Role = "agent" | "user";
-type Message = {
-    content: string,
-    role: Role
-}[]
+
 
 export const createCompletion = async (messages: Message[], model: Model) => {
   // here we are making api call to openrouter using fetch which helps in

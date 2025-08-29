@@ -15,6 +15,7 @@ app.post("/chat", (req, res) => {
         return;
     }
 
+    // Event Emitters
     const {message} = data;
     // ai sdk, openrouter
 })
