@@ -11,6 +11,7 @@ app.post("/chat", async (req, res) => {
   const { success, data } = CreateChatSchema.safeParse(req.body);
 
   const conversationId = data?.conversationId ?? Bun.randomUUIDv7();
+  // data.conversationId hai too purani chat track kar sakte hain varna naya create
 
   if (!success) {
     res.status(411).json({
@@ -19,10 +20,11 @@ app.post("/chat", async (req, res) => {
     return;
   }
 
+  // to give the context to the model about the previous chat conversation
   let existingMessages = InMemoryStore.getInstance().get(conversationId)
 
-  res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
-  res.setHeader("Connection", "keep-alive");
+  res.setHeader("Content-Type", "text/event-stream; charset=utf-8"); // no json no web page but a SSE
+  res.setHeader("Connection", "keep-alive"); // keep the connection open and alive to keep sending chunks of data
   let response = "";
   // Event Emitters
   await createCompletion([...existingMessages, {
