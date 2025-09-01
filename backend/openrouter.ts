@@ -28,7 +28,7 @@ export const createCompletion = async (
         }),
       }
     );
-
+    
     // Check for non-streaming errors from the API
     if (!response.ok) {
       const errorBody = await response.json();
