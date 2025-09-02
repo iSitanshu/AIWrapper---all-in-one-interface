@@ -25,6 +25,7 @@ export const createCompletion = async (
           model: model, // Use the dynamic model parameter
           messages: messages, // Correct variable name
           stream: true, // help in sending the response in chunks
+          max_tokens: 1000 // ✅ add this to stay within your credit/token limit
         }),
       }
     );
