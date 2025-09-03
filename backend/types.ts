@@ -10,6 +10,15 @@ export const CreateChatSchema = z.object({
     model: z.enum(SUPPORTER_MODELS)
 })
 
+export const CreateUser = z.object({
+    email: z.email(),
+})
+
+export const SignIn = z.object({
+    email: z.email(),
+    otp: z.string()
+})
+
 export type Message = {
     content: string,
     role: Role
