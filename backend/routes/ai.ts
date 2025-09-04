@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { CreateChatSchema } from "../types";
+import { CreateChatSchema, Role } from "../types";
 import { createCompletion } from "../openrouter";
 import { InMemoryStore } from "../InMemoryStore";
+import { authMiddleware } from "../auth_middleware";
 
 const router = Router();
 
-router.post("/chat", async (req, res) => {
+router.post("/chat", authMiddleware, async (req, res) => {
+  const userId = req.userId;
   const { success, data } = CreateChatSchema.safeParse(req.body);
 
   const conversationId = data?.conversationId ?? Bun.randomUUIDv7();
