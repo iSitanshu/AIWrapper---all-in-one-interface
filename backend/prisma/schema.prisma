@@ -21,20 +21,17 @@ model User {
   updatedAt DateTime @updatedAt
 
   conversations Conversation[]
-
-  @@map("users")
 }
 
 model Conversation {
   id        String   @id @default(uuid())
   userId    String
+  title     String   @default("Untitled")
   created   DateTime @default(now())
   updated   DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id])
 
   messages  Message[]
-
-  @@map("conversations")
 }
 
 model Message {

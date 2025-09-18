@@ -4,6 +4,9 @@ import { CreateUser, SignIn } from "../types";
 import jwt from "jsonwebtoken";
 import { TOTP } from "totp-generator";
 import base32, { encode } from "hi-base32";
+import { PrismaClient } from "../generated/prisma";
+
+const prismaClient = new PrismaClient();
 
 const router = Router();
 
@@ -29,6 +32,17 @@ router.post("/initiate_signin", async (req, res) => {
     } else {
       console.log("Log into your aiWrapper", otp);
     }
+
+    try {
+      await prismaClient.user.create({
+        data: {
+          email: data.email
+        }
+      })
+    } catch (error) {
+      console.log("User already exists")
+    }
+
     res.json({
       message: "Check your email",
       success: true,
@@ -42,7 +56,7 @@ router.post("/initiate_signin", async (req, res) => {
   }
 });
 
-router.post("/signin", (req, res) => {
+router.post("/signin", async (req, res) => {
   const { success, data } = SignIn.safeParse(req.body);
 
   if (!success) {
@@ -52,6 +66,7 @@ router.post("/signin", (req, res) => {
 
   // Verify with some otp library
   const { otp } = TOTP.generate(base32.encode(data.email + process.env.JWT_SECRET!));
+  // console.log("Here is the signup router otp",otp);
   if (otp != data.otp) {
     res.json({
       message: "Invalid OTP after verify with some otp library",
@@ -61,7 +76,19 @@ router.post("/signin", (req, res) => {
   }
 
   // const userId = process.env.JWT_SECRET;
-  const userId = "Sitanshu";
+  const userId = await prismaClient.user.findUnique({
+    where: {
+      email: data.email
+    }
+  })
+
+  if(!userId) {
+    res.json({
+      message: "User not found",
+      success: false
+    })
+    return;
+  }
 
   const token = jwt.sign(
     {
