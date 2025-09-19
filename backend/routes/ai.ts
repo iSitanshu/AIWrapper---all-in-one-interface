@@ -9,7 +9,43 @@ const prismaClient = new PrismaClient();
 
 const router = Router();
 
-router.post("/chat", async (req, res) => {
+router.get("/conversations", authMiddleware, async(req, res) => {
+  const userId = req.userId;
+
+  const conversations = await prismaClient.conversation.findMany({
+    where: {
+      userId
+    }
+  })
+
+  res.json({
+    conversations
+  })
+});
+
+router.get("/conversations/:conversationId", authMiddleware, async(req, res) => {
+  const userId = req.userId;
+  const conversationId = req.params.conversationId;
+  const conversation = await prismaClient.conversation.findFirst({
+    where: {
+      id: conversationId,
+      userId
+    },
+    include: {
+      messages: {
+        orderBy: {
+          createdAt: "asc"
+        }
+      }
+    }
+  })
+
+  res.json({
+    conversation
+  })
+})
+
+router.post("/chat", authMiddleware, async (req, res) => {
   const userId = req.userId;
   const { success, data } = CreateChatSchema.safeParse(req.body);
 
@@ -25,15 +61,14 @@ router.post("/chat", async (req, res) => {
 
   // to give the context to the model about the previous chat conversation
   let existingMessages = InMemoryStore.getInstance().get(conversationId)
-  console.log("This is the existing Messages - ",existingMessages);
 
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Connection', 'keep-alive');
-  res.flushHeaders();let response = "";
+  res.flushHeaders();
+  let response = "";
   // Event Emitters
-  console.log("before openai")
   await createCompletion([...existingMessages, {
     role: Role.User,
     content: data.message
@@ -42,24 +77,24 @@ router.post("/chat", async (req, res) => {
     res.write(chunk);
   });
   res.end();
-  console.log("after openai")
 
   // message = {} 
   InMemoryStore.getInstance().add(conversationId, {
     role: Role.Agent,
-    content: message
+    content: response
   })
 
   if(!data.conversationId) {
     await prismaClient.conversation.create({
       data: {
-        title: message.substring(0,20) + "...",
+        title: data.message.substring(0,20) + "...",
         id: conversationId,
-        userId,
+        userId
       }
     })
   }
-
+  
+  // store in the DB
   await prismaClient.message.createMany({
     data: [
       {
@@ -69,12 +104,11 @@ router.post("/chat", async (req, res) => {
       },
       {
         conversationId,
-        content: message,
+        content: response,
         role: Role.Agent
       }
     ]
   })
-  // store in the DB
 });
 
 export default router;
