@@ -1,14 +1,19 @@
 import { Router } from "express";
 import { sendEmail } from "../postmark";
-import { CreateUser, SignIn } from "../types";
+import { CreateUser, SignIn, Login } from "../types";
 import jwt from "jsonwebtoken";
 import { TOTP } from "totp-generator";
 import base32, { encode } from "hi-base32";
 import { PrismaClient } from "../generated/prisma";
+import bcrypt from "bcryptjs";
 
 const prismaClient = new PrismaClient();
 
 const router = Router();
+const passwordToHash = process.env.ENCRYPT_PASSWORD_WORD || "random_word";
+const costFactor = process.env.ENCRYPT_CODE
+  ? Number(process.env.ENCRYPT_CODE)
+  : 10;
 
 // TODO: RATE LIMIT this
 router.post("/initiate_signin", async (req, res) => {
@@ -20,7 +25,12 @@ router.post("/initiate_signin", async (req, res) => {
       return;
     }
 
-    const { otp, expires } = TOTP.generate(base32.encode(data.email + process.env.JWT_SECRET!));
+    const { otp, expires } = TOTP.generate(
+      base32.encode(data.email + process.env.JWT_SECRET!)
+    );
+
+    // Hash a password
+    const hashedPassword = await bcrypt.hash(passwordToHash, costFactor);
 
     const generatedOTP = otp;
     if (process.env.NODE_ENV !== "development") {
@@ -34,13 +44,15 @@ router.post("/initiate_signin", async (req, res) => {
     }
 
     try {
-      await prismaClient.user.create({
-        data: {
-          email: data.email
-        }
-      })
+      // await prismaClient.user.create({
+      //   data: {
+      //     email: data.email,
+      //     password: hashedPassword,
+      //   },
+      // });
+      console.log("hashed password", hashedPassword)
     } catch (error) {
-      console.log("User already exists")
+      console.log("User already exists");
     }
 
     res.json({
@@ -65,7 +77,9 @@ router.post("/signin", async (req, res) => {
   }
 
   // Verify with some otp library
-  const { otp } = TOTP.generate(base32.encode(data.email + process.env.JWT_SECRET!));
+  const { otp } = TOTP.generate(
+    base32.encode(data.email + process.env.JWT_SECRET!)
+  );
   // console.log("Here is the signup router otp",otp);
   if (otp != data.otp) {
     res.json({
@@ -78,17 +92,55 @@ router.post("/signin", async (req, res) => {
   // const userId = process.env.JWT_SECRET;
   const userId = await prismaClient.user.findUnique({
     where: {
-      email: data.email
-    }
-  })
+      email: data.email,
+    },
+  });
 
-  if(!userId) {
+  if (!userId) {
     res.json({
       message: "User not found",
-      success: false
-    })
+      success: false,
+    });
     return;
   }
+
+  const token = jwt.sign(
+    {
+      userId,
+    },
+    process.env.JWT_SECRET!
+  );
+
+  res.json({
+    token,
+    success: true,
+  });
+});
+
+router.post("/login", async (req, res) => {
+  const { success, data } = Login.safeParse(req.body);
+  
+  if (!success) {
+    res.status(411).send("Invalid OTP");
+    return;
+  }
+
+  console.log("Data")
+  console.log(data)
+  
+  const passwordToVerify = process.env.ENCRYPT_PASSWORD_WORD || "random_word";
+  
+  const isMatch = await bcrypt.compare(passwordToVerify, data.password);
+  if (!isMatch) {
+    res.status(411).send("Incorrect Password");
+    return;
+  }
+
+  const userId = await prismaClient.user.findUnique({
+    where: {
+      email: data.email,
+    },
+  });
 
   const token = jwt.sign(
     {
