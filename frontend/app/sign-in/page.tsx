@@ -1,4 +1,7 @@
 "use client";
+import { setCurrentUserToken } from "@/lib/features/currentToken/currentTokenSlice";
+import { useAppDispatch } from "@/lib/hooks";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -6,20 +9,35 @@ import React, { useState } from "react";
 const Login_Popup = () => {
   const router = useRouter();
   const [userRegister, setUserRegister] = useState({
-    name: "",
     email: "",
     password: "",
   });
-  
+  const dispatch = useAppDispatch()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserRegister({ ...userRegister, [e.target.name]: e.target.value });
   };
 
+  const handleloginSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios
+      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, userRegister);
+      
+      console.log(response.data);
+      dispatch(setCurrentUserToken(response.data.token))
+      router.push('/api/otp-verification')
+    } catch (error) {
+      console.error("Error while login",error);
+    }
+  }
+
   return (
     <div className="fixed inset-0 flex flex-col gap-6 items-center justify-center bg-black bg-opacity-60 z-50">
       <form
         className="bg-white w-[90%] sm:w-[400px] p-6 rounded-2xl shadow-xl relative"
+        onSubmit={handleloginSubmit}
       >
         {/* Title and Close */}
         <div className="flex justify-between items-center mb-4">

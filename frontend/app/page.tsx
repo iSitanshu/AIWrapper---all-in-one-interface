@@ -3,12 +3,53 @@
 import Main_chat_area from "@/components/Main_chat_area";
 import MiniSidebar from "@/components/MiniSidebar";
 import Sidebar from "@/components/Sidebar";
-import { useAppSelector } from "@/lib/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/hooks";
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode"; // ✅ default import
+import { addUserDetails } from "@/lib/features/userDetail/userSlice";
+import { useEffect } from "react";
+
+// define the shape of your token payload
+interface UserPayload {
+  createdAt: string;
+  credits: number;
+  email: string;
+  id: string;
+  isPremium: boolean;
+  name: string;
+  password: string;
+  updatedAt: string;
+}
 
 export default function Home() {
-  const currentSidebarStatus = useAppSelector((state) => state.currentReducer.miniSidebarstatus);
+  const router = useRouter();
+  const token = useAppSelector(
+    (state) => state.currentTokenReducer.currentToken
+  );
+  const dispatch = useAppDispatch();
 
-  // Sidebar width: 15% if sidebar, 5% if miniSidebar
+  useEffect(() => {
+    if (!token) {
+      router.push("/sign-in");
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode<UserPayload>(token);
+      console.log("here is the decoded token", decoded);
+
+      dispatch(addUserDetails(decoded)); // ✅ use decoded directly
+    } catch (err) {
+      console.error("Invalid token:", err);
+      router.push("/sign-in");
+    }
+  }, [token, dispatch, router]);
+
+  const currentSidebarStatus = useAppSelector(
+    (state) => state.currentReducer.miniSidebarstatus
+  );
+
+  // Sidebar width: 18% if sidebar, 3% if miniSidebar
   const sidebarWidth = currentSidebarStatus ? "w-[18%]" : "w-[3%]";
   const mainWidth = currentSidebarStatus ? "w-[82%]" : "w-[97%]";
 

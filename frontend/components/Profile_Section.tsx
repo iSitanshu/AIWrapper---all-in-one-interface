@@ -1,7 +1,10 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAppSelector } from "@/lib/hooks";
 
 const Profile_Section = () => {
+  const user = useAppSelector((state) => state.userReducer.user);
+  console.log("saved inside user" , user)
   return (
     <div className="flex gap-3 text-white">
       {/* Avatar (left side) */}
@@ -12,8 +15,8 @@ const Profile_Section = () => {
 
       {/* Name & Plan (right side) */}
       <div className="flex flex-col leading-tight">
-        <span className="font-semibold text-sm">Name</span>
-        <span className="text-xs text-gray-400">Plan</span>
+        {/* <span className="font-semibold text-sm">{user.user.name}</span>
+        <span className="text-xs text-gray-400">{user.user.plan}</span> */}
       </div>
     </div>
   );

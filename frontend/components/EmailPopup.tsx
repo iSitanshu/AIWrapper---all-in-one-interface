@@ -52,12 +52,6 @@ const EmailVerificationBox: React.FC = () => {
         <p className="text-center text-sm text-gray-600 mt-2">
           We have sent a verification link to your email address
         </p>
-
-        <div className="text-center mt-6">
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
-            Resend Email
-          </button>
-        </div>
       </div>
 
       {!active && (

@@ -28,6 +28,7 @@ router.post("/initiate_signup", async (req, res) => {
     const { otp, expires } = TOTP.generate(
       base32.encode(data.email + process.env.JWT_SECRET!)
     );
+    console.log("sign up encode value",data.email + process.env.JWT_SECRET);
 
     // Hash a password
     const hashedPassword = await bcrypt.hash(data.password, costFactor);
@@ -81,7 +82,10 @@ router.post("/signin", async (req, res) => {
   const { otp } = TOTP.generate(
     base32.encode(data.email + process.env.JWT_SECRET!)
   );
-  // console.log("Here is the signup router otp",otp);
+
+  console.log("initailize ", data.email + process.env.JWT_SECRET);
+  console.log("Here is the signup router otp",data.otp);
+  console.log("here is the encoded otp",otp)
   if (otp != data.otp) {
     res.json({
       message: "Invalid OTP after verify with some otp library",
@@ -144,7 +148,7 @@ router.post("/login", async (req, res) => {
 
   const token = jwt.sign(
     {
-      userId: user.id,
+      user
     },
     process.env.JWT_SECRET!,
     {expiresIn: "7d"}

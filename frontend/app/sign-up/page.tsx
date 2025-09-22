@@ -2,9 +2,12 @@
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useState } from "react";
+import { useAppDispatch } from "@/lib/hooks";
+import { setUserEmail } from "@/lib/features/Infodetail/infoDetailSlice";
 
 const LoginPopup = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [userDetail, setUserDetail] = useState({
     name: "",
     email: "",
@@ -18,8 +21,8 @@ const LoginPopup = () => {
       const response = await axios
         .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/initiate_signup`, userDetail);
         console.log(response.data);
-        
-        router.push('/otp-verification')
+        dispatch(setUserEmail(userDetail.email))
+        router.push('/api/otp-verification')
     } catch (error) {
       console.error("Error fetching data while initiate_signup:", error);
     }
