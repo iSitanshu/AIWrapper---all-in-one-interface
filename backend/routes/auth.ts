@@ -16,7 +16,7 @@ const costFactor = process.env.ENCRYPT_CODE
   : 10;
 
 // TODO: RATE LIMIT this
-router.post("/initiate_signin", async (req, res) => {
+router.post("/initiate_signup", async (req, res) => {
   try {
     const { success, data } = CreateUser.safeParse(req.body);
 
@@ -30,7 +30,7 @@ router.post("/initiate_signin", async (req, res) => {
     );
 
     // Hash a password
-    const hashedPassword = await bcrypt.hash(passwordToHash, costFactor);
+    const hashedPassword = await bcrypt.hash(data.password, costFactor);
 
     const generatedOTP = otp;
     if (process.env.NODE_ENV !== "development") {
@@ -39,18 +39,19 @@ router.post("/initiate_signin", async (req, res) => {
         "Login to aiWrapper",
         `Log into aiWrapper your otp is ${otp}`
       );
+      console.log("Email edition Log into your aiWrapper using otp", otp);
     } else {
       console.log("Log into your aiWrapper", otp);
     }
 
     try {
-      // await prismaClient.user.create({
-      //   data: {
-      //     email: data.email,
-      //     password: hashedPassword,
-      //   },
-      // });
-      console.log("hashed password", hashedPassword)
+      await prismaClient.user.create({
+        data: {
+          name: data.name,
+          email: data.email,
+          password: hashedPassword,
+        },
+      });
     } catch (error) {
       console.log("User already exists");
     }
@@ -90,13 +91,13 @@ router.post("/signin", async (req, res) => {
   }
 
   // const userId = process.env.JWT_SECRET;
-  const userId = await prismaClient.user.findUnique({
+  const user = await prismaClient.user.findUnique({
     where: {
       email: data.email,
     },
   });
 
-  if (!userId) {
+  if (!user) {
     res.json({
       message: "User not found",
       success: false,
@@ -106,7 +107,7 @@ router.post("/signin", async (req, res) => {
 
   const token = jwt.sign(
     {
-      userId,
+      user,
     },
     process.env.JWT_SECRET!
   );
@@ -119,34 +120,34 @@ router.post("/signin", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { success, data } = Login.safeParse(req.body);
-  
+
   if (!success) {
-    res.status(411).send("Invalid OTP");
+    res.status(411).send("Invalid Input");
     return;
   }
+  
+  const user = await prismaClient.user.findUnique({
+    where: {
+      email: data.email,
+    },
+  });
+  if (!user) {
+  return res.status(404).json({ message: "User not found", success: false });
+}
 
-  console.log("Data")
-  console.log(data)
   
-  const passwordToVerify = process.env.ENCRYPT_PASSWORD_WORD || "random_word";
-  
-  const isMatch = await bcrypt.compare(passwordToVerify, data.password);
+  const isMatch = await bcrypt.compare(data.password,user.password);
   if (!isMatch) {
     res.status(411).send("Incorrect Password");
     return;
   }
 
-  const userId = await prismaClient.user.findUnique({
-    where: {
-      email: data.email,
-    },
-  });
-
   const token = jwt.sign(
     {
-      userId,
+      userId: user.id,
     },
-    process.env.JWT_SECRET!
+    process.env.JWT_SECRET!,
+    {expiresIn: "7d"}
   );
 
   res.json({

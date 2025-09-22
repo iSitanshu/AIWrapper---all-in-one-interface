@@ -12,6 +12,7 @@ export const CreateChatSchema = z.object({
 
 export const CreateUser = z.object({
     email: z.email(),
+    name: z.string(),
     password: z.string().min(7)
 })
 

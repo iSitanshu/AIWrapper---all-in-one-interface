@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import showSidebar from "./features/show_sidebar/showSidebarSlice"
+import currentReducer from './features/currentState/currentStateSlice'
 
 export const store = () => {
     return configureStore({
         reducer: {
-            show: showSidebar
+            currentReducer
         }
     })
 }

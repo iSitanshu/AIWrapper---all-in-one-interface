@@ -5,7 +5,7 @@ import Side_navbar from "./Side_navbar";
 
 const Sidebar = () => {
   return (
-    <div className="h-screen w-64 flex flex-col bg-black text-white border-r border-gray-700">
+    <div className="h-screen flex flex-col bg-black text-white border-r border-gray-700">
       {/* top: logo + navbar */}
       <div className="h-[10%] flex items-center justify-center border-b border-gray-700">
         <Side_navbar />

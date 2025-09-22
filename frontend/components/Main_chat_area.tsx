@@ -14,8 +14,6 @@ const MainChatArea = () => {
   const [selectedModel, setSelectedModel] = useState<string>(models[0].id);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
 
-  
-
   const handleModelSelect = useCallback((modelId: string) => {
     setSelectedModel(modelId);
     setIsDropdownOpen(false);
