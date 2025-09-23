@@ -3,13 +3,13 @@
 import Main_chat_area from "@/components/Main_chat_area";
 import MiniSidebar from "@/components/MiniSidebar";
 import Sidebar from "@/components/Sidebar";
+import Particular_chat from "@/components/Particular_chat"; // ✅ import this
 import { useAppSelector, useAppDispatch } from "@/lib/hooks";
-import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode"; // ✅ default import
+import { useRouter, usePathname } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 import { addUserDetails } from "@/lib/features/userDetail/userSlice";
 import { useEffect } from "react";
 
-// define the shape of your token payload
 interface UserPayload {
   createdAt: string;
   credits: number;
@@ -22,7 +22,11 @@ interface UserPayload {
 }
 
 export default function Home() {
+  const chatid = useAppSelector(
+    (state) => state.infoReducer.particular_chat_id
+  );
   const router = useRouter();
+  const pathname = usePathname(); // ✅ current URL path
   const token = useAppSelector(
     (state) => state.currentTokenReducer.currentToken
   );
@@ -37,8 +41,7 @@ export default function Home() {
     try {
       const decoded = jwtDecode<UserPayload>(token);
       console.log("here is the decoded token", decoded);
-
-      dispatch(addUserDetails(decoded)); // ✅ use decoded directly
+      dispatch(addUserDetails(decoded));
     } catch (err) {
       console.error("Invalid token:", err);
       router.push("/sign-in");
@@ -49,9 +52,15 @@ export default function Home() {
     (state) => state.currentReducer.miniSidebarstatus
   );
 
-  // Sidebar width: 18% if sidebar, 3% if miniSidebar
   const sidebarWidth = currentSidebarStatus ? "w-[18%]" : "w-[3%]";
   const mainWidth = currentSidebarStatus ? "w-[82%]" : "w-[97%]";
+
+  // ✅ Extract conversationId from URL
+  const pathParts = pathname.split("/");
+  const conversationId =
+    pathParts[1] === "api" && pathParts[2] === "conversations"
+      ? pathParts[3]
+      : null;
 
   return (
     <div className="h-screen w-screen flex overflow-hidden">
@@ -62,7 +71,11 @@ export default function Home() {
 
       {/* Main Chat Area */}
       <div className={`${mainWidth} h-full overflow-hidden`}>
-        <Main_chat_area />
+        {conversationId && conversationId === chatid ? (
+          <Particular_chat /> // ✅ if match
+        ) : (
+          <Main_chat_area /> // ✅ default
+        )}
       </div>
     </div>
   );

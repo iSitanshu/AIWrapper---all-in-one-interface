@@ -1,22 +1,37 @@
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAppSelector } from "@/lib/hooks";
 
+interface StoreUser {
+  user?: {
+    name: string;
+    isPremium: boolean;
+  };
+}
+
 const Profile_Section = () => {
-  const user = useAppSelector((state) => state.userReducer.user);
-  console.log("saved inside user" , user)
+  const storeUser = useAppSelector(
+    (state) => state.userReducer.user
+  ) as StoreUser;
+
+  const name = storeUser?.user?.name || "Guest";
+  const isPremium = storeUser?.user?.isPremium ?? false;
+
   return (
     <div className="flex gap-3 text-white">
-      {/* Avatar (left side) */}
+      {/* Avatar with first letter */}
       <Avatar className="h-12 w-12">
-        <AvatarImage src="https://github.com/shadcn.png" />
-        <AvatarFallback>CN</AvatarFallback>
+        <AvatarFallback className="bg-gray-900 text-white font-semibold">
+          {name.charAt(0).toUpperCase()}
+        </AvatarFallback>
       </Avatar>
 
-      {/* Name & Plan (right side) */}
+      {/* User info */}
       <div className="flex flex-col leading-tight">
-        {/* <span className="font-semibold text-sm">{user.user.name}</span>
-        <span className="text-xs text-gray-400">{user.user.plan}</span> */}
+        <span className="font-semibold text-sm">{name}</span>
+        <span className="text-xs text-gray-400">
+          {isPremium ? "Premium" : "Free"}
+        </span>
       </div>
     </div>
   );

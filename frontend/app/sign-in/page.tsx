@@ -27,7 +27,7 @@ const Login_Popup = () => {
       
       console.log(response.data);
       dispatch(setCurrentUserToken(response.data.token))
-      router.push('/api/otp-verification')
+      router.push('/')
     } catch (error) {
       console.error("Error while login",error);
     }
