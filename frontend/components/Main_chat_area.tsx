@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import TextArea from "./TextArea";
+import { Button } from "./ui/button";
 
 const models = [
   { id: "openai/gpt-4o", name: "GPT-4o" },
@@ -22,9 +23,9 @@ const MainChatArea = () => {
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
       {/* Header */}
-      <div className="text-3xl font-bold text-center py-6 text-gray-100">
+      <Button className="text-3xl font-bold text-center py-6 text-gray-100 hover: cursor-pointer">
         AIWrapper
-      </div>
+      </Button>
 
       {/* Model selector + input area */}
       <div className="flex-1 flex flex-col items-center justify-center p-4">

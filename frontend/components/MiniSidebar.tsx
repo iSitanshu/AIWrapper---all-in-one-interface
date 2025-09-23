@@ -4,6 +4,7 @@ import { CombineIcon, PanelLeftClose, Plus } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { setParticularChatId } from "@/lib/features/Infodetail/infoDetailSlice";
 
 
 interface StoreUser {
@@ -16,6 +17,11 @@ interface StoreUser {
 const MiniSidebar = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  const handleplusicon = async () => {
+    dispatch(setParticularChatId(""))
+    router.push('/')
+  }
 
   const handleMiniSidebarStatus = () => {
     dispatch(changeminisidebarStatus());
@@ -45,7 +51,7 @@ const MiniSidebar = () => {
         {/* Plus Button */}
         <button className="text-yellow-300 hover:scale-110 cursor-pointer transition">
           <Plus size={22} 
-          onClick={() => router.push('/')}
+          onClick={() => handleplusicon()}
           />
         </button>
       </div>

@@ -13,8 +13,8 @@ interface Message {
 }
 
 const Conversation = () => {
-  const conversationId = useAppSelector((state) => state.infoReducer.particular_chat_id)
-  const bearerToken = useAppSelector((state) => state.currentTokenReducer.currentToken)
+  const conversationId = useAppSelector((state) => state.infoReducer.particular_chat_id);
+  const bearerToken = useAppSelector((state) => state.currentTokenReducer.currentToken);
   const router = useRouter()
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(true)

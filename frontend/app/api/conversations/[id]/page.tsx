@@ -9,7 +9,7 @@ const Particular_chat_component = () => {
     const currentSidebarStatus = useAppSelector(
         (state) => state.currentReducer.miniSidebarstatus
       );
-    
+
       // Sidebar width: 18% if sidebar, 3% if miniSidebar
       const sidebarWidth = currentSidebarStatus ? "w-[18%]" : "w-[3%]";
       const mainWidth = currentSidebarStatus ? "w-[82%]" : "w-[97%]";
