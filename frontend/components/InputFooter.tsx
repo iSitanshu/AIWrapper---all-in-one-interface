@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import TextArea from "./TextArea";
 
 const models = [
@@ -10,9 +10,9 @@ const models = [
   { id: "meta/llama-3", name: "Llama 3" },
 ];
 
-const MainChatArea = () => {
-  const [selectedModel, setSelectedModel] = useState<string>(models[0].id);
+const InputFooter = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [selectedModel, setSelectedModel] = useState<string>(models[0].id);
 
   const handleModelSelect = useCallback((modelId: string) => {
     setSelectedModel(modelId);
@@ -20,16 +20,10 @@ const MainChatArea = () => {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-900 text-white">
-      {/* Header */}
-      <div className="text-3xl font-bold text-center py-6 text-gray-100">
-        AIWrapper
-      </div>
-
-      {/* Model selector + input area */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4">
+    <div className="fixed bottom-6 w-full flex items-end justify-center px-4">
+      <div className="flex w-full max-w-5xl gap-2 items-end">
         {/* Model Selector */}
-        <div className="w-full max-w-2xl mb-6 relative">
+        <div className="relative">
           <button
             onClick={() => setIsDropdownOpen((prev) => !prev)}
             className="flex justify-between items-center bg-gray-800 text-gray-200 px-4 py-2 rounded-md border border-gray-700 hover:border-gray-500 focus:outline-none focus:ring-1 focus:ring-yellow-300"
@@ -51,13 +45,15 @@ const MainChatArea = () => {
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute mt-2 w-1/3 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
+            <div className="absolute bottom-full mb-2 w-48 bg-gray-800 border border-gray-700 rounded-md shadow-lg z-10">
               {models.map((model) => (
                 <button
                   key={model.id}
                   onClick={() => handleModelSelect(model.id)}
                   className={`w-full text-left px-4 py-2 text-sm ${
-                    selectedModel === model.id ? "bg-gray-700 text-white" : "text-gray-200"
+                    selectedModel === model.id
+                      ? "bg-gray-700 text-white"
+                      : "text-gray-200"
                   } hover:bg-gray-700`}
                 >
                   {model.name}
@@ -67,31 +63,13 @@ const MainChatArea = () => {
           )}
         </div>
 
-        {/* Chat placeholder */}
-        <div className="w-full max-w-2xl bg-gray-800 rounded-lg p-6 flex flex-col items-center justify-center mb-6 h-64">
-          <svg
-            className="w-12 h-12 text-gray-500 mb-3"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-            />
-          </svg>
-          <p className="text-gray-400 text-center">
-            Start a conversation by typing a message below
-          </p>
+        {/* Input area */}
+        <div className="flex-1">
+          <TextArea />
         </div>
-
-        {/* Message Input */}
-        <TextArea />
       </div>
     </div>
   );
 };
 
-export default MainChatArea;
+export default InputFooter;

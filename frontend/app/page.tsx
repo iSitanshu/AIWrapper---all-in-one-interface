@@ -40,7 +40,6 @@ export default function Home() {
 
     try {
       const decoded = jwtDecode<UserPayload>(token);
-      console.log("here is the decoded token", decoded);
       dispatch(addUserDetails(decoded));
     } catch (err) {
       console.error("Invalid token:", err);

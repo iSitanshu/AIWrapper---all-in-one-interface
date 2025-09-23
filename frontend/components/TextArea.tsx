@@ -13,10 +13,17 @@ const TextArea = () => {
     []
   );
 
+  const handleOpenRouter = async  (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+
+    
+  }
+
   return (
       <form
         className="flex w-full max-w-2xl border border-gray-700 rounded-md bg-gray-800"
         style={{ minHeight: "48px" }}
+        onSubmit={handleOpenRouter}
       >
         <textarea
           placeholder="Type your message..."

@@ -3,6 +3,8 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { CombineIcon, PanelLeftClose, Plus } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import React from "react";
+import { useRouter } from "next/navigation";
+
 
 interface StoreUser {
   user?: {
@@ -13,6 +15,7 @@ interface StoreUser {
 
 const MiniSidebar = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const handleMiniSidebarStatus = () => {
     dispatch(changeminisidebarStatus());
@@ -41,7 +44,9 @@ const MiniSidebar = () => {
 
         {/* Plus Button */}
         <button className="text-yellow-300 hover:scale-110 cursor-pointer transition">
-          <Plus size={22} />
+          <Plus size={22} 
+          onClick={() => router.push('/')}
+          />
         </button>
       </div>
 

@@ -10,7 +10,6 @@ export const currentSlice = createSlice({
     reducers: {
         changeminisidebarStatus: (state) => {
             state.miniSidebarstatus = !state.miniSidebarstatus
-            console.log("current mini side bar status - ",state.miniSidebarstatus);
         }
     } // properties and function
 })
