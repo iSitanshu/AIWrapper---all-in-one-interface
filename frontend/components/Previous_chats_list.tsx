@@ -86,9 +86,7 @@ const handleplusicon = async () => {
   // Memoize the handleparticularchat function
   const handleparticularchat = useCallback( async (chatId: string) => {
     // Only dispatch if the chatId is actually changing
-    // if (chatId !== conversationId) {
-    //   dispatch(setParticularChatId(chatId));
-    // }
+    dispatch(setParticularChatId(chatId));
     
     const currentPath = window.location.pathname;
     const match = currentPath.match(/^\/api\/conversations\/[^/]+$/);
