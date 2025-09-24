@@ -78,14 +78,12 @@ router.post("/chat", authMiddleware, async (req: AuthenticatedRequest, res) => {
   }
 
   const { success, data } = CreateChatSchema.safeParse(req.body);
-  console.log(data);
 
   if (!success) {
     return res.status(411).json({ message: "Incorrect inputs" });
   }
 
   const conversationId = data.conversationId ?? crypto.randomUUID();
-  console.log(conversationId)
 
   // Get previous messages from memory
   let existingMessages = InMemoryStore.getInstance().get(conversationId);
@@ -107,7 +105,6 @@ router.post("/chat", authMiddleware, async (req: AuthenticatedRequest, res) => {
       res.write(chunk);
     }
   );
-  console.log(response)
   res.end();
 
   // Save to in-memory store
@@ -134,6 +131,8 @@ router.post("/chat", authMiddleware, async (req: AuthenticatedRequest, res) => {
       { conversationId, content: response, role: Role.Agent },
     ],
   });
+
+  
 });
 
 export default router;

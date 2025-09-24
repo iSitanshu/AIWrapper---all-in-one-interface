@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from "react";
 import TextArea from "./TextArea";
 import { Button } from "./ui/button";
+import { useAppDispatch } from "@/lib/hooks";
+import { setCurrentModel } from "@/lib/features/Infodetail/infoDetailSlice";
 
 const models = [
   { id: "openai/gpt-4o", name: "GPT-4o" },
@@ -14,11 +16,13 @@ const models = [
 const MainChatArea = () => {
   const [selectedModel, setSelectedModel] = useState<string>(models[0].id);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
 
   const handleModelSelect = useCallback((modelId: string) => {
     setSelectedModel(modelId);
-    setIsDropdownOpen(false);
-  }, []);
+    setIsDropdownOpen(false); 
+    dispatch(setCurrentModel(modelId));
+  }, [dispatch]);
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">

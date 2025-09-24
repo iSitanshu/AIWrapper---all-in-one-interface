@@ -2,6 +2,7 @@ import { useAppSelector } from '@/lib/hooks'
 import { useRouter } from 'next/navigation'
 import React, { useState, useEffect, useRef } from 'react'
 import { Clipboard, Check, Loader } from 'lucide-react'
+import FetchMessage from './FetchMessage'
 
 interface Message {
   id: string
@@ -20,6 +21,7 @@ const Conversation = () => {
   const [loading, setLoading] = useState(true)
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const fetchmessagesinchunk = useAppSelector((state) => state.infoReducer.fetch_messages_in_chunk);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -30,10 +32,10 @@ const Conversation = () => {
   }, [messages])
 
   useEffect(() => {
-    if (!conversationId || !bearerToken) {
-      router.push('/sign-in')
-      return
-    }
+    // if (!conversationId || !bearerToken) {
+    //   router.push('/sign-in')
+    //   return
+    // }
 
     const fetchCurrentChat = async () => {
       try {
@@ -61,7 +63,8 @@ const Conversation = () => {
     }
 
     fetchCurrentChat()
-  }, [conversationId, bearerToken, router])
+  }, [conversationId, bearerToken])
+
 
   const handleCopy = async (content: string, messageId: string) => {
     try {
@@ -156,6 +159,9 @@ const Conversation = () => {
           </div>
         ))}
         <div ref={messagesEndRef} />
+        {/* here i need you to first render the question asked by the user and next the chunks comming from the server render it using the above references */}
+        {fetchmessagesinchunk && 
+        <FetchMessage />}
       </div>
     </div>
   )
