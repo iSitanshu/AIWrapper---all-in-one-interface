@@ -32,119 +32,90 @@ const FetchMessage = () => {
     return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  const handleOpenRouter = useCallback(async () => {
-    if (!bearerToken || !currentModel || !conversationId || !currentMessage || hasFetchedRef.current) {
-      return;
+ const handleOpenRouter = useCallback(async () => {
+  if (!bearerToken || !currentModel || !conversationId || !currentMessage || hasFetchedRef.current) {
+    return;
+  }
+
+  hasFetchedRef.current = true;
+  setIsStreaming(true);
+
+  const userMessageId = generateMessageId();
+  const aiMessageId = generateMessageId();
+  streamingMessageIdRef.current = aiMessageId;
+
+  try {
+    // ✅ Add user message
+    dispatch(addMessage({
+      id: userMessageId,
+      role: 'user',
+      content: currentMessage,
+      timestamp: new Date().toISOString(),
+      conversationId
+    }));
+
+    // ✅ Add placeholder AI message
+    dispatch(addMessage({
+      id: aiMessageId,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date().toISOString(),
+      conversationId,
+      isStreaming: true
+    }));
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ai/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${bearerToken}`,
+      },
+      body: JSON.stringify({ conversationId, message: currentMessage, model: currentModel }),
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch conversation");
+
+    const reader = response.body?.getReader();
+    if (!reader) throw new Error("No reader available");
+
+    const decoder = new TextDecoder();
+    let fullResponse = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      fullResponse += chunk;
+
+      // ✅ Update message content instead of re-adding
+      dispatch(updateMessageContent({ id: aiMessageId, content: fullResponse }));
+      dispatch(setMessageStreaming({ id: aiMessageId, isStreaming: true }));
     }
 
-    // Mark as fetched immediately to prevent duplicate calls
-    hasFetchedRef.current = true;
-    setIsStreaming(true);
+    // ✅ Mark streaming complete
+    dispatch(setMessageStreaming({ id: aiMessageId, isStreaming: false }));
 
-    // Generate unique IDs for user and AI messages
-    const userMessageId = generateMessageId();
-    const aiMessageId = generateMessageId();
-    streamingMessageIdRef.current = aiMessageId;
+  } catch (error) {
+    console.error("Error while streaming response", error);
 
-    try {
-      // First, add the user message to the store to make it persist
-      dispatch(addMessage({
-        id: userMessageId,
-        role: 'user',
-        content: currentMessage,
-        timestamp: new Date().toISOString(),
-        conversationId
+    if (streamingMessageIdRef.current) {
+      dispatch(updateMessageContent({
+        id: streamingMessageIdRef.current,
+        content: '⚠️ Error generating response.'
       }));
-
-      // Add empty AI message that will be updated with streaming
-      dispatch(addMessage({
-        id: aiMessageId,
-        role: 'assistant',
-        content: '',
-        timestamp: new Date().toISOString(),
-        conversationId,
-        isStreaming: true
-      }));
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/ai/chat`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${bearerToken}`,
-          },
-          body: JSON.stringify({
-            conversationId,
-            message: currentMessage,
-            model: currentModel,
-          }),
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to fetch conversation");
-
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error("No reader available");
-
-      const decoder = new TextDecoder();
-      let fullResponse = '';
-      
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        fullResponse += chunk;
-        
-        // Update the AI message in store with new chunks
-        dispatch(addMessage({
-          id: aiMessageId,
-          role: 'assistant',
-          content: fullResponse,
-          timestamp: new Date().toISOString(),
-          conversationId,
-          isStreaming: true
-        }));
-      }
-
-      // Mark streaming as complete
-      dispatch(addMessage({
-        id: aiMessageId,
-        role: 'assistant',
-        content: fullResponse,
-        timestamp: new Date().toISOString(),
-        conversationId,
-        isStreaming: false
-      }));
-
-    } catch (error) {
-      console.error("Error while sending and fetching response from the model", error);
-      
-      // Update with error message if streaming fails
-      if (streamingMessageIdRef.current) {
-        dispatch(addMessage({
-          id: streamingMessageIdRef.current,
-          role: 'assistant',
-          content: 'Sorry, there was an error generating the response.',
-          timestamp: new Date().toISOString(),
-          conversationId,
-          isStreaming: false,
-          isError: true
-        }));
-      }
-    } finally {
-      setIsStreaming(false);
-      streamingMessageIdRef.current = null;
-      
-      // Reset the flags after a small delay to ensure everything is processed
-      setTimeout(() => {
-        dispatch(setCurrentMessage(''));
-        dispatch(setFetchMessagesInChunk(false));
-        hasFetchedRef.current = false;
-      }, 100);
+      dispatch(setMessageStreaming({ id: streamingMessageIdRef.current, isStreaming: false }));
     }
-  }, [bearerToken, currentModel, conversationId, currentMessage, dispatch]);
+  } finally {
+    setIsStreaming(false);
+    streamingMessageIdRef.current = null;
+    setTimeout(() => {
+      dispatch(setCurrentMessage(''));
+      dispatch(setFetchMessagesInChunk(false));
+      hasFetchedRef.current = false;
+    }, 100);
+  }
+}, [bearerToken, currentModel, conversationId, currentMessage, dispatch]);
 
   useEffect(() => {
     // Only trigger if we have the flag set, current message, and haven't fetched yet
