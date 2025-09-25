@@ -1,4 +1,4 @@
-import { setCurrentMessage, setFetchMessagesInChunk } from "@/lib/features/Infodetail/infoDetailSlice";
+import { setFetchMessage, setMessages } from "@/lib/features/Infodetail/infoDetailSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import React, { useCallback, useState } from "react";
 
@@ -17,8 +17,8 @@ const TextArea = () => {
   const dispatch = useAppDispatch();
   const handleInputSubmit = async (e: { preventDefault: () => void }) => {
       e.preventDefault();
-        dispatch(setCurrentMessage(message));
-        dispatch(setFetchMessagesInChunk(true))
+      dispatch(setMessages({role: "User" , message: message, timestamp: Date.now()}));
+      dispatch(setFetchMessage(true));
         setMessage("")
   }
 

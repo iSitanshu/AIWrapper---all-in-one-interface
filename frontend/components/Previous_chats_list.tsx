@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MoreVertical, Plus } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useRouter, usePathname } from "next/navigation";
-import { setParticularChatId } from "@/lib/features/Infodetail/infoDetailSlice";
+import { clearMessages, setMessages, setParticularChatId } from "@/lib/features/Infodetail/infoDetailSlice";
 
 interface T {
   createdAt: Date;
@@ -88,6 +88,7 @@ const handleplusicon = async () => {
     // Only dispatch if the chatId is actually changing
     dispatch(setParticularChatId(chatId));
     
+    dispatch(clearMessages());
     const currentPath = window.location.pathname;
     const match = currentPath.match(/^\/api\/conversations\/[^/]+$/);
     

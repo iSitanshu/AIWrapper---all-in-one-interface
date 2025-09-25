@@ -1,32 +1,28 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Message type definition
 interface Message {
   id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: string;
-  conversationId: string;
-  isStreaming?: boolean;
-  isError?: boolean;
+  role: string;
+  message: string;
+  timestamp: number;
 }
 
 interface InfoDetailState {
   current_email: string;
   particular_chat_id: string;
   current_model: string;
-  fetch_messages_in_chunk: boolean;
-  current_message: string;
   messages: Message[];
+  fetch_messages_in_chunk: boolean;
+  isScolling: boolean;
 }
 
 const initialState: InfoDetailState = {
   current_email: "",
   particular_chat_id: "",
   current_model: "openai/gpt-4o",
-  fetch_messages_in_chunk: false,
-  current_message: "",
   messages: [],
+  fetch_messages_in_chunk: false,
+  isScolling: false
 };
 
 export const infoDetailSlice = createSlice({
@@ -40,45 +36,39 @@ export const infoDetailSlice = createSlice({
       state.particular_chat_id = action.payload;
     },
     setCurrentModel: (state, action: PayloadAction<string>) => {
-      // state.current_model = action.payload;
-      // console.log(action.payload);
-      state.current_model = "openai/gpt-4o";
+      state.current_model = action.payload;
     },
-    setFetchMessagesInChunk: (state, action: PayloadAction<boolean>) => {
-      state.fetch_messages_in_chunk = action.payload;
+    setMessages: (state, action: PayloadAction<Omit<Message, 'id'> & { id?: string }>) => {
+      const newMessage: Message = {
+        ...action.payload,
+        id: action.payload.id || `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      };
+      state.messages = [...state.messages, newMessage];
     },
-    setCurrentMessage: (state, action: PayloadAction<string>) => {
-      state.current_message = action.payload;
-    },
-    addMessage: (state, action: PayloadAction<Message>) => {
-      const existingIndex = state.messages.findIndex(msg => msg.id === action.payload.id);
-      if (existingIndex >= 0) {
-        // Update existing message
-        state.messages[existingIndex] = action.payload;
-      } else {
-        // Add new message
-        state.messages.push(action.payload);
+    addatLast: (state, action: PayloadAction<string>) => {
+      if (state.messages && state.messages.length > 0) {
+        const lastMessage = state.messages[state.messages.length - 1];
+        lastMessage.message += action.payload;
       }
     },
     clearMessages: (state) => {
       state.messages = [];
     },
-    clearConversationMessages: (state, action: PayloadAction<string>) => {
-      // Clear messages for a specific conversation
-      state.messages = state.messages.filter(msg => msg.conversationId !== action.payload);
+    setFetchMessage: (state, action) => {
+      state.fetch_messages_in_chunk = action.payload;
     },
-    updateMessageContent: (state, action: PayloadAction<{ id: string; content: string }>) => {
-      const message = state.messages.find(msg => msg.id === action.payload.id);
-      if (message) {
-        message.content = action.payload.content;
+    updateLastMessage: (state, action: PayloadAction<{ message: string; timestamp?: number }>) => {
+      if (state.messages && state.messages.length > 0) {
+        const lastMessage = state.messages[state.messages.length - 1];
+        lastMessage.message = action.payload.message;
+        if (action.payload.timestamp) {
+          lastMessage.timestamp = action.payload.timestamp;
+        }
       }
     },
-    setMessageStreaming: (state, action: PayloadAction<{ id: string; isStreaming: boolean }>) => {
-      const message = state.messages.find(msg => msg.id === action.payload.id);
-      if (message) {
-        message.isStreaming = action.payload.isStreaming;
-      }
-    },
+    setIsScrolling: (state, action) => {
+      state.isScolling = action.payload
+    }
   },
 });
 
@@ -86,12 +76,12 @@ export const {
   setUserEmail,
   setParticularChatId,
   setCurrentModel,
-  setFetchMessagesInChunk,
-  setCurrentMessage,
-  addMessage,
-  clearMessages,
-  clearConversationMessages,
-  updateMessageContent,
-  setMessageStreaming,
+  setMessages,
+  addatLast,
+  updateLastMessage,
+  setFetchMessage,
+  setIsScrolling,
+  clearMessages
 } = infoDetailSlice.actions;
+
 export default infoDetailSlice.reducer;

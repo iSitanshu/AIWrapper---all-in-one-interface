@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Clipboard, Check, Loader } from "lucide-react";
 import { useAppSelector } from "@/lib/hooks";
 import { useParams, useRouter } from "next/navigation";
-import FetchMessage from "./FetchMessage";
+import Rendering from "./Rendering";
 
 interface Message {
   id: string;
@@ -18,6 +18,7 @@ const Conversation: React.FC = () => {
   const bearerToken = useAppSelector(
     (state) => state.currentTokenReducer.currentToken
   );
+  const isScrolling = useAppSelector((state) => state.infoReducer.isScolling);
   const fetchmessagesinchunk = useAppSelector(
     (state) => state.infoReducer.fetch_messages_in_chunk
   );
@@ -28,10 +29,22 @@ const Conversation: React.FC = () => {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // ✅ Scroll only when messages change
+  // ✅ Empty messages when conversationId changes
+  useEffect(() => {
+    setMessages([]);
+  }, [conversationId]);
+
+  // ✅ Scroll when isScrolling is true OR when messages change
+  useEffect(() => {
+    if (isScrolling) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [isScrolling, messages]); // Scroll when isScrolling becomes true OR messages change
+
+  // ✅ Also scroll when new messages are added (as a fallback)
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages.length]); // Scroll when the number of messages changes
 
   // ✅ Fetch chat only when conversationId changes
   const fetchCurrentChat = useCallback(async () => {
@@ -66,8 +79,10 @@ const Conversation: React.FC = () => {
   }, [conversationId, bearerToken, router]);
 
   useEffect(() => {
-    fetchCurrentChat();
-  }, [fetchCurrentChat]);
+    if (conversationId) {
+      fetchCurrentChat();
+    }
+  }, [fetchCurrentChat, conversationId]);
 
   // ✅ Copy functionality
   const handleCopy = async (content: string, messageId: string) => {
@@ -161,7 +176,7 @@ const Conversation: React.FC = () => {
         ))}
 
         {/* Real-time streaming messages */}
-        {fetchmessagesinchunk && <FetchMessage />}
+        {fetchmessagesinchunk && <Rendering />}
 
         <div ref={messagesEndRef} />
       </div>
