@@ -3,6 +3,7 @@ import { MoreVertical, Plus } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useRouter, usePathname } from "next/navigation";
 import { clearMessages, setMessages, setParticularChatId } from "@/lib/features/Infodetail/infoDetailSlice";
+import { store } from "@/lib/store";
 
 interface T {
   createdAt: Date;
@@ -87,8 +88,14 @@ const handleplusicon = async () => {
   const handleparticularchat = useCallback( async (chatId: string) => {
     // Only dispatch if the chatId is actually changing
     dispatch(setParticularChatId(chatId));
+    const beforeMessage = store.getState().infoReducer.messages;
+    console.log("this is the before message", beforeMessage);
     
     dispatch(clearMessages());
+
+    const afterMessage = store.getState().infoReducer.messages;
+    console.log("this is the after messages", afterMessage);
+
     const currentPath = window.location.pathname;
     const match = currentPath.match(/^\/api\/conversations\/[^/]+$/);
     
@@ -97,7 +104,7 @@ const handleplusicon = async () => {
     } else {
       router.push(`/api/conversations/${chatId}`);
     }
-  }, [conversationId]); // Add conversationId as dependency
+  }, [conversationId, dispatch, router]); // Add conversationId as dependency
 
   // Close dropdown when clicking outside - useCallback to prevent recreating
   useEffect(() => {
