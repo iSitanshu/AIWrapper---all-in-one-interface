@@ -84,6 +84,8 @@ router.post("/chat", authMiddleware, async (req: AuthenticatedRequest, res) => {
   }
 
   const conversationId = data.conversationId ?? crypto.randomUUID();
+  // Send conversation metadata first
+  // res.write(`data: ${JSON.stringify({ conversationId })}\n\n`);
 
   // Get previous messages from memory
   let existingMessages = InMemoryStore.getInstance().get(conversationId);

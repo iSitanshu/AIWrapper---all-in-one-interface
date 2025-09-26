@@ -15,6 +15,7 @@ interface Message {
 
 const Conversation: React.FC = () => {
   const { id: conversationId } = useParams<{ id?: string }>();
+  
   const bearerToken = useAppSelector(
     (state) => state.currentTokenReducer.currentToken
   );

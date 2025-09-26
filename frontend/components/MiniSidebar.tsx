@@ -4,7 +4,7 @@ import { CombineIcon, PanelLeftClose, Plus } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { setParticularChatId } from "@/lib/features/Infodetail/infoDetailSlice";
+import { clearMessages, setParticularChatId } from "@/lib/features/Infodetail/infoDetailSlice";
 
 
 interface StoreUser {
@@ -20,6 +20,7 @@ const MiniSidebar = () => {
 
   const handleplusicon = async () => {
     dispatch(setParticularChatId(""))
+    dispatch(clearMessages())
     router.push('/')
   }
 
