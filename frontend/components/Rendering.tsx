@@ -1,13 +1,15 @@
-import { addatLast, setIsScrolling, setMessages } from '@/lib/features/Infodetail/infoDetailSlice';
+import { addatLast, setFetchNewMessage, setIsScrolling, setMessages, setParticularChatId } from '@/lib/features/Infodetail/infoDetailSlice';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Check, Clipboard } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const Rendering = () => {
   const dispatch = useAppDispatch();
   const bearerToken = useAppSelector((state) => state.currentTokenReducer.currentToken);
   const conversationId = useAppSelector((state) => state.infoReducer.particular_chat_id);
-  console.log("to check for new route", conversationId);
+  const router = useRouter();
+  
   const currentModel = useAppSelector((state) => state.infoReducer.current_model);
   const messages = useAppSelector((state) => state.infoReducer.messages || []);
   
@@ -40,7 +42,7 @@ const Rendering = () => {
       return;
     }
 
-    if (!bearerToken || !currentModel || !conversationId) {
+    if (!bearerToken || !currentModel) {
       return;
     }
 
@@ -62,6 +64,8 @@ const Rendering = () => {
     setIsProcessing(true);
     setIsThinking(true);
 
+    
+
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ai/chat`, {
         method: 'POST',
@@ -76,7 +80,12 @@ const Rendering = () => {
         }),
       });
 
-      // const newConversationId
+      const newConversationId = response.headers.get('X-Conversation-Id');
+
+      if(newConversationId && !conversationId) {
+        dispatch(setParticularChatId(newConversationId));
+        router.push(`/conversations/${newConversationId}`);
+      }
 
       // Set initial assistant message
       dispatch(setMessages({
@@ -128,7 +137,6 @@ const Rendering = () => {
                                  messages[messages.length - 2].timestamp > lastMessage.timestamp;
 
       if (!hasAssistantResponse && !isProcessing) {
-        console.log('Triggering AI response for new user message');
         handleOpenRouter();
       }
     }

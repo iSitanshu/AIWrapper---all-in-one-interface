@@ -9,19 +9,21 @@ interface Message {
 
 interface InfoDetailState {
   current_email: string;
-  particular_chat_id: string;
+  particular_chat_id: string | null;
   current_model: string;
   messages: Message[];
   fetch_messages_in_chunk: boolean;
+  fetch_new_message: boolean;
   isScolling: boolean;
 }
 
 const initialState: InfoDetailState = {
   current_email: "",
-  particular_chat_id: "",
+  particular_chat_id: null,
   current_model: "openai/gpt-4o",
   messages: [],
   fetch_messages_in_chunk: false,
+  fetch_new_message: false,
   isScolling: false
 };
 
@@ -34,6 +36,9 @@ export const infoDetailSlice = createSlice({
     },
     setParticularChatId: (state, action: PayloadAction<string>) => {
       state.particular_chat_id = action.payload;
+    },
+    setFetchNewMessage: (state, action) => {
+      state.fetch_new_message = action.payload;
     },
     setCurrentModel: (state, action: PayloadAction<string>) => {
       state.current_model = action.payload;
@@ -81,6 +86,7 @@ export const {
   updateLastMessage,
   setFetchMessage,
   setIsScrolling,
+  setFetchNewMessage,
   clearMessages
 } = infoDetailSlice.actions;
 

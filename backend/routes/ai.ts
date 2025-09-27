@@ -34,6 +34,31 @@ interface AuthenticatedRequest extends Request {
 
 const router = Router();
 
+router.get("/get/conversationId", authMiddleware, async (req: AuthenticatedRequest, res) => {
+  const userId = req.userId || req.user?.id;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const conversationId = crypto.randomUUID();
+  let data = req.query.data;
+  let title = "Untitled Conversation";
+  if (typeof data === "string") {
+    title = data.substring(0, 20) + "...";
+  } else if (Array.isArray(data) && typeof data[0] === "string") {
+    title = data[0].substring(0, 20) + "...";
+  }
+
+  await prismaClient.conversation.create({
+    data: {
+      title,
+      id: conversationId,
+      userId,
+    },
+  });
+
+  res.json({ conversationId });
+});
+
 router.get("/conversations", authMiddleware, async (req: AuthenticatedRequest, res) => {
   const userId = req.userId || req.user?.id;
 
@@ -84,17 +109,13 @@ router.post("/chat", authMiddleware, async (req: AuthenticatedRequest, res) => {
   }
 
   const conversationId = data.conversationId ?? crypto.randomUUID();
-  // Send conversation metadata first
-  // res.write(`data: ${JSON.stringify({ conversationId })}\n\n`);
 
-  // Get previous messages from memory
   let existingMessages = InMemoryStore.getInstance().get(conversationId);
 
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Connection", "keep-alive");
-  if(!data.conversationId) res.setHeader('X-Conversation-Id',conversationId);
   res.flushHeaders();
 
   let response = "";
@@ -115,17 +136,6 @@ router.post("/chat", authMiddleware, async (req: AuthenticatedRequest, res) => {
     role: Role.Agent,
     content: response,
   });
-
-  // Create conversation if new
-  if (!data.conversationId) {
-    await prismaClient.conversation.create({
-      data: {
-        title: data.message.substring(0, 20) + "...",
-        id: conversationId,
-        userId,
-      },
-    });
-  }
 
   // Store messages in DB
   await prismaClient.message.createMany({

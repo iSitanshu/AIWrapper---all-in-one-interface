@@ -15,6 +15,7 @@ interface Message {
 
 const Conversation: React.FC = () => {
   const { id: conversationId } = useParams<{ id?: string }>();
+  const currentconversationId = useAppSelector((state) => state.infoReducer.particular_chat_id);
   
   const bearerToken = useAppSelector(
     (state) => state.currentTokenReducer.currentToken

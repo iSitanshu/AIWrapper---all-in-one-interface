@@ -1,11 +1,13 @@
-import { setFetchMessage, setMessages } from "@/lib/features/Infodetail/infoDetailSlice";
-import { useAppDispatch } from "@/lib/hooks";
-// import { useParams, useRouter } from "next/navigation";
+import { setFetchMessage, setFetchNewMessage, setMessages, setParticularChatId } from "@/lib/features/Infodetail/infoDetailSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useParams, useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
-// import { v4 as uuidv4 } from 'uuid';
 
 const TextArea = () => {
   const [message, setMessage] = useState<string>("");
+  const conversationId = useParams<{ id?: string }>();
+  const bearerToken = useAppSelector((state) => state.currentTokenReducer.currentToken)
+  const router = useRouter();
   const handleTextareaInput = useCallback(
     (e: React.FormEvent<HTMLTextAreaElement>) => {
       const textarea = e.currentTarget;
@@ -21,7 +23,27 @@ const TextArea = () => {
   const handleInputSubmit = async (e: { preventDefault: () => void }) => {
       e.preventDefault();
       dispatch(setMessages({role: "User" , message: message, timestamp: Date.now()}));
-      dispatch(setFetchMessage(true));
+      if(!conversationId.id) {
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ai/get/conversationId?data=${message}`,{
+          method: 'GET',
+            headers: {
+              Authorization: `Bearer ${bearerToken}`
+          }
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        const newConversationId = data.conversationId;
+
+        router.push(`/api/conversations/${newConversationId}`); 
+        dispatch(setFetchNewMessage(true));
+        dispatch(setParticularChatId(newConversationId));
+      }
+      else dispatch(setFetchMessage(true));
       setMessage("")
   }
 

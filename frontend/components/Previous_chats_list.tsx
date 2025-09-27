@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { MoreVertical, Plus } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useRouter, usePathname } from "next/navigation";
-import { clearMessages, setMessages, setParticularChatId } from "@/lib/features/Infodetail/infoDetailSlice";
+import { clearMessages, setFetchMessage, setFetchNewMessage, setMessages, setParticularChatId } from "@/lib/features/Infodetail/infoDetailSlice";
 
 interface T {
   createdAt: Date;
@@ -93,7 +93,8 @@ const handleplusicon = async () => {
 
     const currentPath = window.location.pathname;
     const match = currentPath.match(/^\/api\/conversations\/[^/]+$/);
-    
+      
+    dispatch(setFetchNewMessage(false));
     if (match) {
       router.replace(`/api/conversations/${chatId}`);
     } else {

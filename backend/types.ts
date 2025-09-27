@@ -5,7 +5,7 @@ export const SUPPORTER_MODELS = ["openai/gpt-4o" , "openai/gpt-5"];
 export type MODEL = typeof SUPPORTER_MODELS[number];
 
 export const CreateChatSchema = z.object({
-    conversationId: z.uuid().optional(),
+    conversationId: z.union([z.uuid(), z.null()]).optional(),
     message: z.string().max(MAX_INPUT_TOKENS),
     model: z.enum(SUPPORTER_MODELS)
 })

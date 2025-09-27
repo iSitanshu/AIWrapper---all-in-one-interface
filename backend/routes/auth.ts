@@ -61,7 +61,6 @@ router.post("/initiate_signup", async (req, res) => {
       success: true,
     });
   } catch (error) {
-    console.log("Error in the post initial_signup route", error);
     res.json({
       message: "Internal Server error",
       success: false,

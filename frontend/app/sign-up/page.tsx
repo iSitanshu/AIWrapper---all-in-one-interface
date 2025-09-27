@@ -16,11 +16,9 @@ const LoginPopup = () => {
 
   const handleSubmitSignup = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    console.log(userDetail)
     try {
-      const response = await axios
+     await axios
         .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/initiate_signup`, userDetail);
-        console.log(response.data);
         dispatch(setUserEmail(userDetail.email))
         router.push('/api/otp-verification')
     } catch (error) {
