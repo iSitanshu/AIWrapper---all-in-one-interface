@@ -94,6 +94,7 @@ router.post("/chat", authMiddleware, async (req: AuthenticatedRequest, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Connection", "keep-alive");
+  if(!data.conversationId) res.setHeader('X-Conversation-Id',conversationId);
   res.flushHeaders();
 
   let response = "";

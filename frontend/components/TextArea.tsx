@@ -17,20 +17,11 @@ const TextArea = () => {
     []
   );
   const dispatch = useAppDispatch();
-  // const route = useRouter();
-  // const params = useParams<{ id?: string }>();
-  // const id = typeof params.id === "string" && params.id ? params.id : "";
 
   const handleInputSubmit = async (e: { preventDefault: () => void }) => {
       e.preventDefault();
       dispatch(setMessages({role: "User" , message: message, timestamp: Date.now()}));
       dispatch(setFetchMessage(true));
-      // here if no conversationId in the store we should create one and route to that ID
-      // console.log("current id to check the route condition", id);  
-      // if(!id) {
-      //   const newId = uuidv4();
-      //   route.push(`/conversations/${newId}`);
-      // }
       setMessage("")
   }
 

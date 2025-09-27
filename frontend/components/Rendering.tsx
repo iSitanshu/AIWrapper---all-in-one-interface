@@ -7,6 +7,7 @@ const Rendering = () => {
   const dispatch = useAppDispatch();
   const bearerToken = useAppSelector((state) => state.currentTokenReducer.currentToken);
   const conversationId = useAppSelector((state) => state.infoReducer.particular_chat_id);
+  console.log("to check for new route", conversationId);
   const currentModel = useAppSelector((state) => state.infoReducer.current_model);
   const messages = useAppSelector((state) => state.infoReducer.messages || []);
   
@@ -69,11 +70,13 @@ const Rendering = () => {
           Authorization: `Bearer ${bearerToken}`,
         },
         body: JSON.stringify({ 
-          conversationId, 
+          conversationId: conversationId || null, 
           message: lastUserMessage.message, 
           model: currentModel 
         }),
       });
+
+      // const newConversationId
 
       // Set initial assistant message
       dispatch(setMessages({
