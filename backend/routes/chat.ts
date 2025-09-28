@@ -1,5 +1,5 @@
 import { Router, type Request } from "express";
-import { authMiddleware } from "../auth_middleware";
+import { authMiddleware } from "../middleware/auth_middleware";
 import { PrismaClient } from "../generated/prisma";
 
 const router = Router();

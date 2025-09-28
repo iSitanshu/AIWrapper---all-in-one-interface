@@ -33,9 +33,17 @@ const Login_Popup = () => {
       dispatch(setCurrentUserToken(response.data.token))
       router.push('/')
     } catch (error) {
-      setShowError(true);
-      console.error("Error while login",error);
-    } finally {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 429) {
+        // Rate limit exceeded
+        router.push('/api/chill-out');
+        return;
+      }
+    }
+
+    setShowError(true);
+    console.error("Error while login", error);
+  } finally {
       setLoading(false);
     }
   }

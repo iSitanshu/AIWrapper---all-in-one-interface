@@ -6,6 +6,8 @@ import { TOTP } from "totp-generator";
 import base32, { encode } from "hi-base32";
 import { PrismaClient } from "../generated/prisma";
 import bcrypt from "bcryptjs";
+import { withRateLimit } from "next-limitr";
+import { NextResponse } from "next/server";
 
 const prismaClient = new PrismaClient();
 
@@ -14,6 +16,14 @@ const passwordToHash = process.env.ENCRYPT_PASSWORD_WORD || "random_word";
 const costFactor = process.env.ENCRYPT_CODE
   ? Number(process.env.ENCRYPT_CODE)
   : 10;
+
+export const GET = withRateLimit({
+  limit: 2,
+  windowMs: 60000, // 1 minute
+})((req) => {
+  return NextResponse.json({ message: "Hello world!" });
+});
+
 
 // TODO: RATE LIMIT this
 router.post("/initiate_signup", async (req, res) => {

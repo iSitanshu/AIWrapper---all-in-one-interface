@@ -2,7 +2,7 @@ import { Router, type Request } from "express";
 import { CreateChatSchema, Role } from "../types";
 import { createCompletion } from "../openrouter";
 import { InMemoryStore } from "../InMemoryStore";
-import { authMiddleware } from "../auth_middleware";
+import { authMiddleware } from "../middleware/auth_middleware";
 import { PrismaClient } from "../generated/prisma";
 import crypto from "crypto";
 
