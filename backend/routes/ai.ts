@@ -68,15 +68,15 @@ router.get("/conversations", authMiddleware, async (req: AuthenticatedRequest, r
 
   const conversations = await prismaClient.conversation.findMany({
     where: { userId },
+    orderBy: {
+      updatedAt: "desc"
+    }
   });
 
   res.json({ conversations });
 });
 
-router.get(
-  "/conversations/:conversationId",
-  authMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+router.get("/conversations/:conversationId", authMiddleware, async (req: AuthenticatedRequest, res) => {
     const userId = req.userId || req.user?.id;
     const conversationId = req.params.conversationId;
 

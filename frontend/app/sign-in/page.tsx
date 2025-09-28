@@ -2,12 +2,15 @@
 import { setCurrentUserToken } from "@/lib/features/currentToken/currentTokenSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import axios from "axios";
+import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 
 const Login_Popup = () => {
   const router = useRouter();
+  const [showError, setShowError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [userRegister, setUserRegister] = useState({
     email: "",
     password: "",
@@ -20,17 +23,34 @@ const Login_Popup = () => {
 
   const handleloginSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
+    setShowError(false);
+
 
     try {
+      setLoading(true);
       const response = await axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, userRegister);
-      
       dispatch(setCurrentUserToken(response.data.token))
       router.push('/')
     } catch (error) {
+      setShowError(true);
       console.error("Error while login",error);
+    } finally {
+      setLoading(false);
     }
   }
+
+  // ✅ Loading screen
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center h-full">
+          <div className="flex flex-col items-center space-y-4">
+            <Loader className="w-8 h-8 animate-spin text-blue-500" />
+            <p className="text-gray-400">Loading conversation...</p>
+          </div>
+        </div>
+      );
+    }
 
   return (
     <div className="fixed inset-0 flex flex-col gap-6 items-center justify-center bg-black bg-opacity-60 z-50">
@@ -42,7 +62,7 @@ const Login_Popup = () => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-gray-800">Login</h2>
         </div>
-
+        {showError && <p className="text-red-600">Invalid Username and password. Try again</p>}
         {/* Inputs */}
         <div className="flex flex-col gap-4 mb-4">
           
