@@ -8,6 +8,7 @@ import { PrismaClient } from "../generated/prisma";
 import bcrypt from "bcryptjs";
 import { withRateLimit } from "next-limitr";
 import { NextResponse } from "next/server";
+import { getOrSetCache } from "../utils/cache";
 
 const prismaClient = new PrismaClient();
 
