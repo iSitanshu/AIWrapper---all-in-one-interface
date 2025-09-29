@@ -156,7 +156,7 @@ const Previous_chats_list = () => {
         <div
           key={chat.id}
           className={`flex items-center justify-between px-4 py-2 cursor-pointer transition relative
-            ${isActive ? "bg-yellow-700 text-yellow-300" : "hover:bg-gray-800"}`}
+            ${isActive ? "bg-yellow-900 text-yellow-300" : "hover:bg-gray-800"}`}
           onClick={() => !isRenaming && handleparticularchat(chat.id)}
         >
           {isRenaming ? (
@@ -215,7 +215,15 @@ const Previous_chats_list = () => {
         </div>
       );
     });
-  });
+  }, [
+    chats,
+    conversationId,
+    handleparticularchat,
+    openDropdownId,
+    renamingId,
+    renameValue,
+    loading,
+  ]);
 
   return (
     <div className="h-full flex flex-col bg-black text-white">
