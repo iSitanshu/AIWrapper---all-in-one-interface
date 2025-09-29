@@ -8,7 +8,6 @@ export async function getOrSetCache<T>(
   // 1. Try Redis cache
   const cached = await redis.get(key);
   if (cached) {
-    console.log("Cache hit:", key);
     if (typeof cached === "string") return JSON.parse(cached) as T;
   }
 
@@ -17,7 +16,6 @@ export async function getOrSetCache<T>(
 
   // 3. Save in cache
   await redis.set(key, JSON.stringify(data), { ex: ttlSeconds });
-  console.log("Cache miss → data stored:", key);
 
   return data;
 }

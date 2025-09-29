@@ -47,28 +47,27 @@ router.delete('/:id', authMiddleware, async (req: AuthenticatedRequest, res) => 
     }
 });
 
-router.get('/:id', authMiddleware, async (req: AuthenticatedRequest, res) => {
+router.put('/:id', authMiddleware, async (req: AuthenticatedRequest, res) => {
     const { id } = req.params;
-    console.log(id)
+    const { newTitle } = req.body;  // Get new title from request body
+    const title = newTitle.substring(0, 20) + "...";
     const userId = req.userId || req.user?.id;
-    console.log(userId);
-
 
     if (!userId) {
-        return res.status(401).json({ message: "Login before deleting the conversation" });
+        return res.status(401).json({ message: "Login before renaming the conversation" });
     }
 
     try {
-        const update_response = await prismaClient.conversation.findFirst({
-            where: {id},
-        },
-        // data: {
-        //     title: newTitle
-        // }
-    )
-        // console.log(response);
+        await prismaClient.conversation.update({
+            where: { id },
+            data: {
+                title,
+            },
+        });
 
-        return res.status(200).json({ message: "Rename conversation Succcessfully" });
+        return res.status(200).json({
+            message: "Conversation renamed successfully",
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Failed to rename conversation" });
