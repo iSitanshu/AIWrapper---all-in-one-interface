@@ -31,7 +31,7 @@ const Login_Popup = () => {
       const response = await axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, userRegister);
       dispatch(setCurrentUserToken(response.data.token))
-      router.push('/')
+      router.push('/', { scroll: false });
     } catch (error) {
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 429) {

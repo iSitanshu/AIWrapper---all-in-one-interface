@@ -58,6 +58,7 @@ const handleplusicon = async () => {
         }
         
         const data = await response.json();
+        console.log(data)
         setChats(data.conversations || []);
       } catch (error) {
         console.error("Error while fetching previous chats", error);
