@@ -35,17 +35,20 @@ const Conversation: React.FC = () => {
     setMessages([]);
   }, [conversationId]);
 
-  // ✅ Scroll when isScrolling is true OR when messages change
+  // Enhanced scroll effect
   useEffect(() => {
-    if (isScrolling) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (isScrolling || messages.length > 0 || fetchmessagesinchunk) {
+      messagesEndRef.current?.scrollIntoView({ 
+        behavior: "smooth",
+        block: "end"
+      });
     }
-  }, [isScrolling, messages]); // Scroll when isScrolling becomes true OR messages change
-
+  }, [isScrolling, messages.length, fetchmessagesinchunk]);
+  
   // ✅ Also scroll when new messages are added (as a fallback)
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length]); // Scroll when the number of messages changes
+  }, [messages.length, isScrolling]); // Scroll when the number of messages changes
 
   // ✅ Fetch chat only when conversationId changes
   const fetchCurrentChat = useCallback(async () => {

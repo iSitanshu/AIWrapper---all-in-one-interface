@@ -81,6 +81,8 @@ const Rendering = () => {
       });
 
       const newConversationId = response.headers.get('X-Conversation-Id');
+      setIsScrolling(true);
+
 
       if(newConversationId && !conversationId) {
         dispatch(setParticularChatId(newConversationId));
@@ -121,6 +123,7 @@ const Rendering = () => {
       console.error('Error while streaming response', error);
       setIsThinking(false);
       setIsProcessing(false);
+    } finally {
       setIsScrolling(false);
     }
   }, [bearerToken, currentModel, conversationId, messages, dispatch, isProcessing]);
