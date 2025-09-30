@@ -44,7 +44,7 @@ const Conversation: React.FC = () => {
       });
     }
   }, [isScrolling, messages.length, fetchmessagesinchunk]);
-  
+
   // ✅ Also scroll when new messages are added (as a fallback)
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
