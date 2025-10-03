@@ -29,6 +29,7 @@ const Conversation: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isChunkActive = useAppSelector((state) => state.infoReducer.isChunkActive);
 
   // ✅ Empty messages when conversationId changes
   useEffect(() => {
@@ -43,12 +44,12 @@ const Conversation: React.FC = () => {
         block: "end"
       });
     }
-  }, [isScrolling, messages.length, fetchmessagesinchunk]);
+  }, [isScrolling, messages.length, fetchmessagesinchunk, isChunkActive]);
 
   // ✅ Also scroll when new messages are added (as a fallback)
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length, isScrolling]); // Scroll when the number of messages changes
+  }, [messages.length, isScrolling, isChunkActive]); // Scroll when the number of messages changes
 
   // ✅ Fetch chat only when conversationId changes
   const fetchCurrentChat = useCallback(async () => {

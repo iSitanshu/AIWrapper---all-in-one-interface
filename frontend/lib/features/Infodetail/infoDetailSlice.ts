@@ -15,6 +15,7 @@ interface InfoDetailState {
   fetch_messages_in_chunk: boolean;
   fetch_new_message: boolean;
   isScolling: boolean;
+  isChunkActive: boolean;
 }
 
 const initialState: InfoDetailState = {
@@ -24,7 +25,8 @@ const initialState: InfoDetailState = {
   messages: [],
   fetch_messages_in_chunk: false,
   fetch_new_message: false,
-  isScolling: false
+  isScolling: false,
+  isChunkActive: false
 };
 
 export const infoDetailSlice = createSlice({
@@ -73,6 +75,9 @@ export const infoDetailSlice = createSlice({
     },
     setIsScrolling: (state, action) => {
       state.isScolling = action.payload
+    },
+    setIsChunkActive: (state, action) => {
+      state.isChunkActive = action.payload
     }
   },
 });
@@ -87,7 +92,8 @@ export const {
   setFetchMessage,
   setIsScrolling,
   setFetchNewMessage,
-  clearMessages
+  clearMessages,
+  setIsChunkActive
 } = infoDetailSlice.actions;
 
 export default infoDetailSlice.reducer;

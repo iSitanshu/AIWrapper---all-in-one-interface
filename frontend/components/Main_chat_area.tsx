@@ -1,9 +1,8 @@
 import React, { useState, useCallback } from "react";
 import TextArea from "./TextArea";
 import { Button } from "./ui/button";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useAppDispatch } from "@/lib/hooks";
 import { setCurrentModel } from "@/lib/features/Infodetail/infoDetailSlice";
-import Rendering from "./Rendering";
 
 const models = [
   { id: "openai/gpt-4o", name: "GPT-4o" },
@@ -16,7 +15,6 @@ const models = [
 
 const MainChatArea = () => {
   const [selectedModel, setSelectedModel] = useState<string>(models[0].id);
-  const fetch_new_message_in_chunks = useAppSelector((state) => state.infoReducer.fetch_new_message);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const dispatch = useAppDispatch();
 

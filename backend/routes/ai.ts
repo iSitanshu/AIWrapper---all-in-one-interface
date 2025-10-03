@@ -144,8 +144,6 @@ router.post("/chat", authMiddleware, async (req: AuthenticatedRequest, res) => {
       { conversationId, content: response, role: Role.Agent },
     ],
   });
-
-  
 });
 
 export default router;
