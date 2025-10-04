@@ -115,6 +115,21 @@ const Rendering = () => {
     setIsThinking(true);
 
     try {
+      // const response = await fetch(
+      //   `${process.env.NEXT_PUBLIC_BACKEND_URL}/ai/chat`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       Authorization: `Bearer ${bearerToken}`,
+      //     },
+      //     body: JSON.stringify({
+      //       conversationId: conversationId || null,
+      //       message: lastUserMessage.message,
+      //       model: currentModel,
+      //     }),
+      //   }
+      // );
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/ai/chat`,
         {
@@ -222,8 +237,8 @@ const Rendering = () => {
     messages.length > 0 && messages[messages.length - 1].role === "assistant";
 
   return (
-    <div className="flex border-1 flex-col h-auto min-h-0">
-      <div className={`flex-1 p-4 space-y-6 overflow-y-auto`}>
+    <div className={`flex border-1 flex-col ${fetch_new_message_in_chunks ? `h-full min-h-0 border` :  `h-auto`}`}>
+      <div className={`flex-1 p-4 space-y-6 overflow-y-auto ${fetch_new_message_in_chunks && `custom-scrollbar`}`}>
         {messages.map((message, index) => (
           <div
             key={index}

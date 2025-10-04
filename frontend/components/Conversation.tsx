@@ -48,7 +48,14 @@ const Conversation: React.FC = () => {
 
   // ✅ Also scroll when new messages are added (as a fallback)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const interval = setInterval(() => {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }, 1000); // scroll every second
+
+    return () => clearInterval(interval);
   }, [messages.length, isScrolling, isChunkActive]); // Scroll when the number of messages changes
 
   // ✅ Fetch chat only when conversationId changes
