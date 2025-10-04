@@ -11,6 +11,7 @@ const Login_Popup = () => {
   const router = useRouter();
   const [showError, setShowError] = useState(false);
   const [loading, setLoading] = useState(false);
+  
   const [userRegister, setUserRegister] = useState({
     email: "",
     password: "",
@@ -54,7 +55,7 @@ const Login_Popup = () => {
         <div className="flex items-center justify-center h-full">
           <div className="flex flex-col items-center space-y-4">
             <Loader className="w-8 h-8 animate-spin text-blue-500" />
-            <p className="text-gray-400">Loading conversation...</p>
+            <p className="text-gray-400">Loading...</p>
           </div>
         </div>
       );
