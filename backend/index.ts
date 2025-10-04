@@ -10,9 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/auth", rateLimiter(5, 60), authRouter)
-// app.use("/ai", rateLimiter(10, 60), aiRouter)
-app.use("/ai", aiRouter)
-// app.use("/chat/change" ,rateLimiter(15, 60), chatRouter);
-app.use("/chat/change" , chatRouter);
+app.use("/ai", rateLimiter(20, 60), aiRouter)
+app.use("/chat/change" ,rateLimiter(20, 60), chatRouter);
 
 app.listen(5000,() => console.log(`Server running on PORT: 5000`));
