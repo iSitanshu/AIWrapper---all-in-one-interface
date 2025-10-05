@@ -5,7 +5,7 @@ FROM oven/bun:1.1.8
 WORKDIR /app
 
 # Copy package.json and bun.lockb to leverage Docker layer caching
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 
 # Install dependencies
 RUN bun install --frozen-lockfile

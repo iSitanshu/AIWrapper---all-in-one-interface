@@ -1,6 +1,5 @@
 import {
   addatLast,
-  setFetchNewMessage,
   setIsChunkActive,
   setIsScrolling,
   setMessages,
@@ -32,7 +31,6 @@ const Rendering = () => {
   const [isThinking, setIsThinking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const hasScrolledInitialRef = useRef(false); // Track initial scroll
 
   const fetch_new_message_in_chunks = useAppSelector(
     (state) => state.infoReducer.fetch_new_message
@@ -220,7 +218,7 @@ const Rendering = () => {
         handleOpenRouter();
       }
     }
-  }, [messages.length, isProcessing, handleOpenRouter]);
+  });
 
   // Get the last assistant message (for streaming display)
   const getLastAssistantMessage = () => {
