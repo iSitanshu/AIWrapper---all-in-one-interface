@@ -1,20 +1,27 @@
-# Use the official Bun image as a base
-FROM oven/bun:1.1.8
+# Use official Bun base image
+FROM oven/bun:latest
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and bun.lockb to leverage Docker layer caching
-COPY package.json bun.lock ./
+# Copy package and lock first (for better caching)
+COPY package.json bun.lock* ./
 
-# Install dependencies
-RUN bun install --frozen-lockfile
+# Install dependencies (production only)
+RUN bun install
 
-# Copy the rest of your application code
+# Copy Prisma schema first so prisma generate can be cached
+COPY prisma ./prisma
+
+# Generate Prisma client
+RUN bunx prisma generate || true
+
+# Copy the rest of your code
 COPY . .
 
-# Expose the port your app runs on (Elysia's default is 3000)
-EXPOSE 3000
+# Copy entrypoint script (to handle migrate + start)
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# The command to run your application
-CMD ["bun", "start"]
+EXPOSE 3000
+CMD ["/entrypoint.sh"]
