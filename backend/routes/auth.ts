@@ -107,7 +107,7 @@ router.post("/login", async (req, res) => {
     {expiresIn: "7d"}
   );
 
-  res.json({
+  return res.json({
     token,
     success: true,
   });

@@ -25,27 +25,34 @@ const Login_Popup = () => {
   const handleloginSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setShowError(false);
+    setLoading(true);
 
 
     try {
-      setLoading(true);
       console.log("hello")
-      const response = await axios
-      .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, userRegister);
+      // Add this debug line to see what URL is actually being used
+      console.log("Backend URL:", `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
+        userRegister
+      );
       console.log("authentication token - ", response)
-      // dispatch(setCurrentUserToken(response.data.token))
-      // router.push('/', { scroll: false });
+      // if (response.data.success) {
+      // // Store the token properly
+      // localStorage.setItem('token', response.data.token);
+      dispatch(setCurrentUserToken(response.data.token))
+      router.replace('/', { scroll: false });
     } catch (error) {
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 429) {
         // Rate limit exceeded
-        router.push('/api/chill-out');
+        router.replace('/api/chill-out');
         return;
       }
     }
 
+    console.error("Login error:", error);
     setShowError(true);
-    console.error("Error while login", error);
   } finally {
       setLoading(false);
     }

@@ -36,7 +36,6 @@ const LoginPopup = () => {
     setShowError(false);
 
     try {
-      console.log("hello")
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/initiate_signup`,
         userDetail
