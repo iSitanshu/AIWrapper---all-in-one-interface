@@ -1,3 +1,7 @@
+#!/bin/sh
+# Exit immediately if a command fails
+set -e
+
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -10,4 +14,4 @@ echo "2. Running migrations..."
 bunx prisma migrate deploy
 
 echo "3. Starting backend..."
-exec bun run index.ts
+exec bun start
