@@ -31,6 +31,7 @@ const Login_Popup = () => {
       setLoading(true);
       const response = await axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, userRegister);
+      console.log("authentication token - ", response.data)
       dispatch(setCurrentUserToken(response.data.token))
       router.push('/', { scroll: false });
     } catch (error) {
