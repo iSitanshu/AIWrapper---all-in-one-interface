@@ -37,6 +37,7 @@ const Login_Popup = () => {
       // // Store the token properly
       // localStorage.setItem('token', response.data.token);
       if (response.data.success) {
+        console.log("here")
         dispatch(setUserEmail(userRegister.email));
         dispatch(setCurrentUserToken(response.data.token));
         router.push("/", { scroll: false });
