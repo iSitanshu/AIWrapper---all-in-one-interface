@@ -57,6 +57,7 @@ const Login_Popup = () => {
       console.error("Login error:", error);
       setShowError(true);
     } finally {
+      console.log("Exit to the login")
       setLoading(false);
     }
   };
