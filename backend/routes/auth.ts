@@ -29,7 +29,7 @@ router.post("/initiate_signup", async (req, res) => {
     const { success, data } = CreateUser.safeParse(req.body);
 
     if (!success) {
-      res.status(411).send("Invalid Input");
+      return res.status(411).send("Invalid Input");
       return;
     }
 

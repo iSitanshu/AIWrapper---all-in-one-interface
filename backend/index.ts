@@ -9,7 +9,10 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({ origin: process.env.CORS_ORIGIN }));
+app.use(cors({
+  origin: `${process.env.CORS_ORIGIN}`,
+  credentials: true
+}));
 app.use(express.json());
 app.use("/auth", rateLimiter(5, 60), authRouter)
 app.use("/ai", rateLimiter(20, 60), aiRouter)
