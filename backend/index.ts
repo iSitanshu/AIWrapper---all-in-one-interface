@@ -7,6 +7,8 @@ import { rateLimiter } from "./middleware/rateLimiter.js";
 
 const app = express();
 
+const PORT = process.env.PORT || 3000;
+
 app.use(cors({ origin: process.env.CORS_ORIGIN }));
 app.use(express.json());
 app.use("/auth", rateLimiter(5, 60), authRouter)
@@ -18,4 +20,4 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-app.listen(process.env.PORT || 3000,() => console.log(`Server running on PORT: 5000`));
+app.listen(PORT, () => console.log(`Server running on PORT: ${PORT}`));
