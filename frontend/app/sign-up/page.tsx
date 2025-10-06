@@ -43,7 +43,6 @@ const LoginPopup = () => {
 
       if (response.data.success) {
         dispatch(setUserEmail(userDetail.email));
-        console.log(response.data)
         dispatch(setCurrentUserToken(response.data.token))
         router.push("/", { scroll: false });
       } else {
