@@ -29,6 +29,7 @@ const Login_Popup = () => {
 
     try {
       setLoading(true);
+      console.log("hello")
       const response = await axios
       .post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, userRegister);
       console.log("authentication token - ", response.data)
