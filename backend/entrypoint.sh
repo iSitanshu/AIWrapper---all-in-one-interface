@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "Generating Prisma client..."
-bunx prisma generate || true
+echo "=== Starting Application ==="
 
-echo "Running migrations..."
-until bunx prisma migrate deploy; do
-  echo "Database not ready yet. Retrying in 2s..."
-  sleep 2
-done
+echo "1. Generating Prisma client..."
+bunx prisma generate
 
-echo "Starting backend..."
-exec bun index.ts
+echo "2. Running migrations..."
+bunx prisma migrate deploy
+
+echo "3. Starting backend..."
+exec bun run index.ts

@@ -1,6 +1,9 @@
 # Use official Bun base image
 FROM oven/bun:latest
 
+# Install OpenSSL for Prisma (CRITICAL FIX)
+RUN apt-get update && apt-get install -y openssl
+
 # Set working directory
 WORKDIR /app
 
