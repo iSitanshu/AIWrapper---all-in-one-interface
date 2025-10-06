@@ -3,7 +3,8 @@ import { CreateChatSchema, Role } from "../types";
 import { createCompletion } from "../openrouter";
 import { InMemoryStore } from "../InMemoryStore";
 import { authMiddleware } from "../middleware/auth_middleware";
-import { PrismaClient } from "../generated/prisma";
+// import { PrismaClient } from "../generated/prisma";
+import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 
 const prismaClient = new PrismaClient();

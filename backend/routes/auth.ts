@@ -1,14 +1,11 @@
 import { Router } from "express";
 import { CreateUser, SignIn, Login } from "../types";
 import jwt from "jsonwebtoken";
-import { TOTP } from "totp-generator";
-import base32, { encode } from "hi-base32";
-import { PrismaClient } from "../generated/prisma";
+// import { PrismaClient } from "../generated/prisma";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { withRateLimit } from "next-limitr";
 import { NextResponse } from "next/server";
-import { getOrSetCache } from "../utils/cache";
-import { sendEmail } from "../postmark";
 
 const prismaClient = new PrismaClient();
 
