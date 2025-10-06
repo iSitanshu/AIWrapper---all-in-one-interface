@@ -2,9 +2,6 @@
 # Exit immediately if a command fails
 set -e
 
-#!/usr/bin/env bash
-set -euo pipefail
-
 echo "=== Starting Application ==="
 
 echo "1. Generating Prisma client..."
