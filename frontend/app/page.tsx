@@ -25,6 +25,7 @@ export default function Home() {
   const token = useAppSelector(
     (state) => state.currentTokenReducer.currentToken
   );
+  console.log("this is the token which is not displaying", token)
   const dispatch = useAppDispatch();
 
   useEffect(() => {

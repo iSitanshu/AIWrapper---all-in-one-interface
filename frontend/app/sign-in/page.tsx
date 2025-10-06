@@ -1,22 +1,22 @@
 "use client";
 import { setCurrentUserToken } from "@/lib/features/currentToken/currentTokenSlice";
+import { setUserEmail } from "@/lib/features/Infodetail/infoDetailSlice";
 import { useAppDispatch } from "@/lib/hooks";
 import axios from "axios";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-
 const Login_Popup = () => {
   const router = useRouter();
   const [showError, setShowError] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const [userRegister, setUserRegister] = useState({
     email: "",
     password: "",
   });
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserRegister({ ...userRegister, [e.target.name]: e.target.value });
@@ -27,48 +27,49 @@ const Login_Popup = () => {
     setShowError(false);
     setLoading(true);
 
-
     try {
-      console.log("hello")
       // Add this debug line to see what URL is actually being used
-      console.log("Backend URL:", `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
         userRegister
       );
-      console.log("authentication token - ", response)
       // if (response.data.success) {
       // // Store the token properly
       // localStorage.setItem('token', response.data.token);
-      dispatch(setCurrentUserToken(response.data.token))
-      router.replace('/', { scroll: false });
-    } catch (error) {
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 429) {
-        // Rate limit exceeded
-        router.replace('/api/chill-out');
-        return;
+      if (response.data.success) {
+        dispatch(setUserEmail(userRegister.email));
+        dispatch(setCurrentUserToken(response.data.token));
+        router.push("/", { scroll: false });
+      } else {
+        setShowError(true);
       }
-    }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 429) {
+          // Rate limit exceeded
+          router.push("/api/chill-out");
+          return;
+        }
+      }
 
-    console.error("Login error:", error);
-    setShowError(true);
-  } finally {
+      console.error("Login error:", error);
+      setShowError(true);
+    } finally {
       setLoading(false);
     }
-  }
+  };
 
   // ✅ Loading screen
-    if (loading) {
-      return (
-        <div className="flex items-center justify-center h-full">
-          <div className="flex flex-col items-center space-y-4">
-            <Loader className="w-8 h-8 animate-spin text-blue-500" />
-            <p className="text-gray-400">Loading...</p>
-          </div>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader className="w-8 h-8 animate-spin text-blue-500" />
+          <p className="text-gray-400">Loading...</p>
         </div>
-      );
-    }
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 flex flex-col gap-6 items-center justify-center bg-black bg-opacity-60 z-50">
@@ -80,10 +81,13 @@ const Login_Popup = () => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold text-gray-800">Login</h2>
         </div>
-        {showError && <p className="text-red-600">Invalid Username and password. Try again</p>}
+        {showError && (
+          <p className="text-red-600">
+            Invalid Username and password. Try again
+          </p>
+        )}
         {/* Inputs */}
         <div className="flex flex-col gap-4 mb-4">
-          
           <input
             type="email"
             name="email"
@@ -118,16 +122,16 @@ const Login_Popup = () => {
 
         {/* Switch to sign in */}
         <p className="mt-4 text-sm text-center text-gray-700">
-              Create a new account?{" "}
-              <span
-                className="text-yellow-600 font-semibold cursor-pointer hover:underline"
-                onClick={() => {
-                  router.push('/sign-up')
-                }}
-              >
-                Click here
-              </span>
-            </p>
+          Create a new account?{" "}
+          <span
+            className="text-yellow-600 font-semibold cursor-pointer hover:underline"
+            onClick={() => {
+              router.push("/sign-up");
+            }}
+          >
+            Click here
+          </span>
+        </p>
       </form>
     </div>
   );

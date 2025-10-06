@@ -112,5 +112,4 @@ router.post("/login", async (req, res) => {
     success: true,
   });
 });
-
 export default router;

@@ -31,7 +31,7 @@ const LoginPopup = () => {
     );
   }
 
-  const handleSubmitSignup = async (e: React.FormEvent) => {
+  const handleSubmitSignup = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setShowError(false);
 
