@@ -43,8 +43,11 @@ const LoginPopup = () => {
 
       if (response.data.success) {
         dispatch(setUserEmail(userDetail.email));
+        localStorage.setItem('token', response.data.token);
         dispatch(setCurrentUserToken(response.data.token))
-        router.push("/", { scroll: false });
+        setTimeout(() => {
+          router.push("/", { scroll: false });
+        }, 100);
       } else {
         setShowError(true);
       }
