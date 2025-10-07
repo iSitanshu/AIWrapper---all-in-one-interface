@@ -26,7 +26,10 @@ const Profile_Section = () => {
       {/* Logout button (shows on toggle) */}
       {renderLogout && (
         <Button
-          onClick={() => dispatch(setCurrentUserToken(null))}
+          onClick={() => {
+            dispatch(setCurrentUserToken(null));
+            localStorage.removeItem('token');
+          }}
           variant="destructive"
           className="absolute bottom-13 left-0 w-24 py-2 text-sm rounded-lg shadow-md cursor-pointer"
         >

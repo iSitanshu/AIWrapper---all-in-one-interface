@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { addUserDetails } from "@/lib/features/userDetail/userSlice";
 import { useEffect } from "react";
+import { setCurrentUserToken } from "@/lib/features/currentToken/currentTokenSlice";
 
 interface UserPayload {
   createdAt: string;
@@ -25,21 +26,29 @@ export default function Home() {
   const token = useAppSelector(
     (state) => state.currentTokenReducer.currentToken
   );
-  console.log("this is the token which is not displaying", token)
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!token) {
+    const storedToken = localStorage.getItem('token');
+    
+    if (storedToken && !token) {
+      dispatch(setCurrentUserToken(storedToken));
+    } else if (!storedToken) {
       router.push("/sign-in");
-      return;
     }
+  }, [dispatch, router, token]);
 
-    try {
-      const decoded = jwtDecode<UserPayload>(token);
-      dispatch(addUserDetails(decoded));
-    } catch (err) {
-      console.error("Invalid token:", err);
-      router.push("/sign-in");
+  useEffect(() => {
+    if (token) {
+      try {
+        const decoded = jwtDecode<UserPayload>(token);
+        dispatch(addUserDetails(decoded));
+      } catch (err) {
+        console.error("Invalid or expired token:", err);
+        localStorage.removeItem('token');
+        dispatch(setCurrentUserToken(null)); // Assuming null clears the token
+        router.push("/sign-in");
+      }
     }
   }, [token, dispatch, router]);
 
