@@ -75,6 +75,7 @@ const Login_Popup = () => {
 
   return (
     <div className="fixed inset-0 flex flex-col gap-6 items-center justify-center bg-black bg-opacity-60 z-50">
+      <p>page 1</p>
       <form
         className="bg-white w-[90%] sm:w-[400px] p-6 rounded-2xl shadow-xl relative"
         onSubmit={handleloginSubmit}
