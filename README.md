@@ -22,9 +22,11 @@
 ### 🔹 Conversations & Home  
 See previous conversations and chat directly with AI in an intuitive interface.  
 
-| Conversations | Home Layout |
-|----------------|-------------|
-| ![Conversations](./image/Conversations.jpg) | ![Home Layout](./image/Home_Layout.jpg) |  
+#### 🏠 Home Layout  
+![Home Layout](./Images/Home_Layout.jpg)
+
+#### 💬 Conversations  
+![Conversations](./Images/Conversations.jpg)
 
 ---
 
